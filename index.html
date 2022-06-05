@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>张孝荣最棒！</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body{
+            height: 100%;
+            width: 100%;
+        }
+        #viewDiv {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #swipeviewDiv{
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+         }
+        .custom-ui{
+            position: absolute;
+            top: 15px;
+            left: 60px;
+            text-align: center;
+        }
+        .scalebar{
+            font-size: 16px;
+            background-color: white;
+            margin-top: 20px;
+            padding: 0 5px;
+            font-family: 楷体;
+        }
+        .latlon{
+            font-size: 16px;
+            /*font-style: italic;*/
+            color: black;
+            background-color: white;
+            border-radius: 2%;
+            padding: 0 5px;
+            font-family: 楷体;
+        }
+        .iconfont{
+            cursor: pointer;
+        }
+
+        .iconfont:hover{
+            color: red;
+        }
+        #bridviewDiv{
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            border-radius: 5%;
+        }
+
+        .BMap_cpyCtrl ,.anchorBL{
+            display: none;
+        }
+        .esri-layer-list__item .img-container {
+            overflow: hidden;
+            width: 42px;
+            height: 42px;
+            margin-left: 5px;
+            float: left;
+            border: 0.5px solid rgba(156, 149, 149, 0.5);
+            border-radius: 5%;
+        }
+        .esri-layer-list__item img{
+            /*width: 42px;*/
+            height: 40px;
+
+        }
+
+        .esri-swipe__container{
+            z-index: 999;
+        }
+
+
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
+    <link rel="stylesheet" href="fonts/iconfont.css">
+    <script src="https://js.arcgis.com/4.19/"></script>
+    <script src="https://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+
+
+</head>
+<body>
+<div id="swipeviewDiv"></div>
+<div id="viewDiv">
+
+    <div class="custom-ui">
+        <div class="latlon"></div>
+        <div class="scalebar"></div>
+    </div>
+
+    <div class="esri-ui" style="inset: 0px;">
+        <div class="esri-ui-inner-container esri-ui-corner-container" style="inset: 15px 15px 30px;">
+            <div class="esri-ui-bottom-left esri-ui-corner">
+                <div class="esri-component esri-basemap-gallery esri-widget esri-widget--panel-height-only">
+                    <ul class="esri-basemap-gallery__item-container" role="menu">
+                        <li aria-selected="true" class="esri-basemap-gallery__item esri-basemap-gallery__item--selected" base-map="arcgis-navigation">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/78c096abedb9498380f5db1922f96aa0/info/thumbnail/thumbnail1607388861033.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Navigation</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-imagery-standard">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/c7d2b5c334364e8fb5b73b0f4d6a779b/info/thumbnail/thumbnail1607389529861.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Imagery</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-imagery">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/ea3befe305494bb5b2acd77e1b3135dc/info/thumbnail/thumbnail1607389425104.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Imagery Hybrid</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-topographic">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/dd247558455c4ffab54566901a14f42c/info/thumbnail/thumbnail1607389112065.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Topographic</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-streets">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/e3e6df1d2f6a485d8a70f28fdd3ce19e/info/thumbnail/thumbnail1607389307240.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Streets</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-streets-relief">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/03daad361e1849bc80cb7b70ed391379/info/thumbnail/thumbnail1607564881281.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Streets (with Relief)</div>
+                        </li>
+                        <li aria-selected="false" class="esri-basemap-gallery__item" base-map="arcgis-streets-night">
+                            <img alt="" class="esri-basemap-gallery__item-thumbnail" src="https://www.arcgis.com/sharing/rest/content/items/b22e146f927e413c92f75b5e4614354a/info/thumbnail/thumbnail1607388481562.jpeg?f=json">
+                            <div class="esri-basemap-gallery__item-title">Streets (Night)</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="esri-ui-top-right esri-ui-corner">
+                <div class="esri-component esri-layer-list esri-widget esri-widget--panel">
+                    <ul aria-label="图层列表" data-group="root" class="esri-layer-list__list esri-layer-list__list--root esri-layer-list__list--independent">
+                        <li class="none-layer">无可显示图层</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="esri-ui-inner-container esri-ui-manual-container">
+            <div class="esri-component esri-popup" role="presentation"></div>
+            <div class="esri-component esri-swipe esri-widget esri-swipe--horizontal">
+                <div tabindex="0" touch-action="none" role="slider" title="拖动进行比较" aria-label="拖动进行比较" aria-orientation="horizontal" aria-valuemax="100" aria-valuemin="0" aria-valuenow="50" aria-valuetext="50%" class="esri-swipe__container" style="left: 100%;">
+                    <div role="presentation" class="esri-swipe__divider"></div>
+                    <div role="presentation" class="esri-swipe__handle">
+                        <span aria-hidden="true" class="esri-swipe__handle-icon esri-icon-drag-vertical"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="esri-component esri-spinner"></div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div id="bridviewDiv"></div>
+
+
+
+<script>
+    const apikey = "AAPKf989502c66b6481b8095b7e084f7f3beABVUBJXNRgPV7ZOxdyeeJ_pzGcb-gRbo89CGqTNelh4pZnShAYVKeFk6s8Z0M8oh";
+
+    require(["esri/renderers/ClassBreaksRenderer","esri/config", "esri/Map", "esri/Basemap","esri/views/MapView", "esri/layers/FeatureLayer", "esri/layers/MapImageLayer", "esri/layers/ImageryTileLayer", "esri/layers/TileLayer","esri/widgets/Expand", "esri/geometry/Point",
+        "esri/layers/GraphicsLayer","esri/Graphic","esri/core/watchUtils", "esri/widgets/Legend","esri/geometry/geometryEngine"],
+        function ( ClassBreaksRenderer,esriConfig, Map, Basemap,MapView, FeatureLayer, MapImageLayer, ImageryTileLayer, TileLayer, Expand,Point, GraphicsLayer,Graphic,watchUtils,Legend,geometryEngine) {
+        esriConfig.apiKey = apikey;
+
+        //Map添加一个myadd方法
+        Map.prototype.myadd = function (layer) {
+            this.add(layer);
+            addLayer(layer);
+        }
+
+
+        //初始化地图
+        //底图
+        const map = new Map({
+            basemap: "arcgis-navigation"
+        });
+        const view = new MapView({
+            container: "viewDiv",
+            map: map,
+            center: [112, 31],
+            zoom: 6
+        });
+
+        const map1 = new Map({
+            basemap: "arcgis-navigation"
+        });
+        const swipeView = new MapView({
+            container: "swipeviewDiv",
+            map: map1,
+            center: [112, 31],
+            zoom: 6
+        });
+        swipeView.ui.remove('zoom')
+        swipeView.ui.remove('attribution')
+
+
+        //右小角小地图
+        const bridmap = new Map({
+            basemap: "arcgis-navigation"
+        });
+        const bridView = new MapView({
+            container: "bridviewDiv",
+            map: bridmap,
+            center: [112, 31],
+            zoom: 6,
+            constraints: {
+                // Disable zoom snapping to get the best synchronization
+                snapToZoom: false
+            }
+        });
+        bridView.ui.remove('zoom')
+        bridView.ui.remove('attribution')
+
+
+        const popupTrailheads = {
+            "title": "hubei",
+            "content": "<b>名称:</b> {NAME}<br><b>人口:</b> {population}万人<br><b>农业地面积:</b> {snow}千公顷"
+        }
+        const trailheadsLayer = new FeatureLayer({
+            url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/hubeijson/FeatureServer/0",
+            outFields: ["NAME","population","snow"],
+            popupTemplate: popupTrailheads
+        });
+
+            function createSymbol(color){
+                return {
+                    type: "simple-fill",
+                    color,
+                    style: "solid",
+                    outline: {
+                        width: 0.2,
+                        color: [255, 255, 255, 0.2]
+                    }
+                };
+            }
+            const renderer1 = new ClassBreaksRenderer({
+                field: "population",
+                //normalizationField: "snow",
+                legendOptions: {
+                    title: "% population"
+                },
+                defaultSymbol: {
+                    type: "simple-fill",
+                    color: "black",
+                    style: "backward-diagonal",
+                    outline: {
+                        width: 0.5,
+                        color: [50, 50, 50, 0.6]
+                    }
+                },
+                defaultLabel: "no data",
+                classBreakInfos: [
+                    {
+                        minValue: 0,
+                        maxValue: 78.5,
+                        symbol: createSymbol("#e6eecf"),
+
+                    },
+                    {
+                        minValue:78.65,
+                        maxValue: 159,
+                        symbol: createSymbol("#b4d2c6"),
+
+                    },
+                    {
+                        minValue: 159.1,
+                        maxValue: 306,
+                        symbol: createSymbol("#82b6bc"),
+
+                    },
+                    {
+                        minValue: 306.1,
+                        maxValue: 403,
+                        symbol: createSymbol("#69a8b7"),
+
+                    },
+                    {
+                        minValue: 403.1,
+                        maxValue: 633,
+                        symbol: createSymbol("#4b7e98"),
+                        label: "< 5%"
+                    }
+                    ,{
+                        minValue: 633.1,
+                        maxValue: 920,
+                        symbol: createSymbol("#2e557a"),
+                        label: "< 5%"
+                    }
+
+                ]
+            });
+
+            const trailheadsLayer1 = new FeatureLayer({
+                "title": "hubei class",
+                url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/hubeijson/FeatureServer/0",
+
+                renderer: renderer1,
+
+                popupTemplate: {
+                    content: "{population}万人."
+                },
+
+                opacity: 1,
+                outFields: ["NAME","population","snow"],
+            });
+
+
+
+
+            const agp1 = new FeatureLayer({
+                title: "YILIAO",
+                url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/yiliao/FeatureServer/0"
+            })
+            const agp = new FeatureLayer({
+                title: "YLHotmap",
+                url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/yiliao/FeatureServer/0"
+            })
+
+            const colors = ["rgba(115, 0, 115, 0)", "#820082", "#910091", "#a000a0", "#af00af", "#c300c3", "#d700d7", "#eb00eb", "#ff00ff", "#ff58a0", "#ff896b", "#ffb935", "#ffea00"];
+
+        agp.renderer = {
+            type: "heatmap",
+            colorStops: [
+                { color: colors[0], ratio: 0 },
+                { color: colors[1], ratio: 0.083 },
+                { color: colors[2], ratio: 0.166 },
+                { color: colors[3], ratio: 0.249 },
+                { color: colors[4], ratio: 0.332 },
+                { color: colors[5], ratio: 0.415 },
+                { color: colors[6], ratio: 0.498 },
+                { color: colors[7], ratio: 0.581 },
+                { color: colors[8], ratio: 0.664 },
+                { color: colors[9], ratio: 0.747 },
+                { color: colors[10], ratio: 0.83 },
+                { color: colors[11], ratio: 0.913 },
+                { color: colors[12], ratio: 1 }
+            ],
+            blurRadius: 10,
+            maxPixelIntensity: 111,
+            minPixelIntensity: 0
+        };
+
+
+
+
+
+
+        map.myadd(trailheadsLayer);
+        map.myadd(trailheadsLayer1);
+        map.myadd(agp);
+        map1.add(agp)
+        map.myadd(agp1)
+       // map.myadd(layer);
+
+            const layer_2022 = new FeatureLayer({
+                "title": "Hubei Buffer",
+                url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/yiliao/FeatureServer/0"
+                // url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/hubeijson/FeatureServer/0",
+
+            });
+            map.myadd(layer_2022);
+
+            const geojsonlayer = new FeatureLayer({
+                "title": "Yiliao Buffer",
+                url: "https://services6.arcgis.com/1IiMhppqT8LlkIQM/arcgis/rest/services/hubeijson/FeatureServer/0",
+            });
+            geojsonlayer.outFields = ["*"];
+            map.myadd(geojsonlayer);
+
+
+            view.on("click", function (evt) {
+                view.graphics.removeAll();
+                if (evt.button != 0) return;
+                let query = geojsonlayer.createQuery();
+                query.geometry = view.toMap(evt);  // the point location of the pointer
+                query.distance = 2;
+                query.units = "miles";
+                query.spatialRelationship = "intersects";  // this is the default
+                query.returnGeometry = true;
+                query.outFields = ["*"];
+                //query.where = "mag > 3";
+
+                //geojsonlayer.queryFeatureCount(query).then(function (abc) { alert("Layer: "+abc) });
+                geojsonlayer.queryFeatures(query).then(function (abc) {
+
+
+                    abc.features.forEach(function (item) {
+
+                        const bufferPoly = geometryEngine.geodesicBuffer(item.geometry,0.01,'kilometers');
+
+                        var g = new Graphic({
+                            geometry: bufferPoly, //item.geometry,
+                            attributes: item.attributes,
+                            symbol: {
+                                type: "simple-fill",
+                                color: [200, 100, 100, 0.3]
+                                //size: 3,//item.attributes['magnitude'] * item.attributes['magnitude'],
+                                //style: "square"
+
+                            }
+                        });
+
+                        view.graphics.add(g);
+
+                        const area = geometryEngine.geodesicArea(item.geometry, "square-kilometers");
+
+                        let query2 = layer_2022.createQuery();
+                        query2.geometry = bufferPoly;
+
+                        query2.spatialRelationship = "intersects";  // this is the default
+                        query2.returnGeometry = true;
+                        query2.outFields = ["*"];
+
+                        layer_2022.queryFeatures(query2).then(function(eqs){
+
+                            eqs.features.forEach(function(eachEq){
+
+                                var g = new Graphic({
+                                    geometry: eachEq.geometry,
+                                    attributes: eachEq.attributes,
+                                    symbol: {
+                                        type: "simple-marker",
+                                        color: [200, 0, 0, 0.8]
+                                        //size: 3,//item.attributes['magnitude'] * item.attributes['magnitude'],
+                                        //style: "square"
+
+                                    }
+                                });
+
+                                view.graphics.add(g);
+                            });
+
+                        });
+
+                    });
+
+                });
+
+            });
+
+
+
+
+        map.layers.items.forEach(layer => {
+            layer.when(function () {
+                if (layer instanceof MapImageLayer) {
+                    layer.fetchImage(layer.fullExtent, 160, 160).then(function (result) {
+                        let $item = $(`#${layer.id}`);
+                        console.log(result)
+                        $item.find("img").attr("src", result.src);
+                    });
+                }
+                else if (layer instanceof TileLayer) {
+                    layer.fetchTile(layer.minScale,0,0).then(function (result) {
+                        let $item = $(`#${layer.id}`);
+                        $item.find("img").attr("src", result.src);
+                    })
+
+                }else if (layer instanceof FeatureLayer) {
+                    view.whenLayerView(layer)
+                        .then(function(layerView) {
+                            watchUtils.whenFalseOnce(layerView,"updating",function () {
+                                return view.takeScreenshot({layers:[layer],width:320}).then(function (screenshot) {
+                                    console.log(screenshot)
+                                    let $item = $(`#${layer.id}`);
+                                    $item.find("img").attr("src", screenshot.dataUrl);
+                                })
+                            })
+                        })
+                }
+            })
+        });
+
+
+        view.on("pointer-move", function (e) {
+            let p = new Point(e.x, e.y)
+            let p1 = view.toMap(p);
+            $(".latlon").html(`经度：${p1.longitude.toFixed(5)}，纬度：${p1.latitude.toFixed(5)}`);
+        });
+
+        view.watch("scale",function () {
+            $(".scalebar").html(`1:${view.scale}`)
+        })
+
+        const views = [view, bridView,swipeView];
+        let active;
+
+        const sync = (source) => {
+            if (!active || !active.viewpoint || active !== source) {
+                return;
+            }
+
+            for (const view of views) {
+                if (view !== active) {
+                    view.viewpoint = active.viewpoint;
+                }
+            }
+        };
+
+        for (const view of views) {
+            view.watch(["interacting", "animation"], () => {
+                active = view;
+                sync(active);
+            });
+            view.watch("viewpoint", () => sync(view));
+        }
+
+
+
+        //1.change map
+        let basemaps = document.getElementsByClassName("esri-basemap-gallery__item");
+
+        let currentIndex = 0;
+        for (let i = 0; i < basemaps.length; i++) {
+            basemaps[i].onclick = function () {
+                this.setAttribute("aria-selected", true);
+                this.className = "esri-basemap-gallery__item esri-basemap-gallery__item--selected";
+
+                bridmap.basemap = map.basemap = basemaps[i].getAttribute("base-map");
+                if (currentIndex !== i) {
+                    basemaps[currentIndex].setAttribute("aria-selected", false);
+                    basemaps[currentIndex].className = "esri-basemap-gallery__item";
+                    currentIndex = i;
+                }
+            }
+        }
+
+
+
+
+        //2.layer manage
+        $(".esri-layer-list__item-label").click(function () {
+            let $item = $(this);
+            let aria_checked = $item.attr("aria-checked");
+            let $eye = $item.find(".esri-layer-list__item-toggle span");
+            if (aria_checked === "true") {
+                $eye.attr("class", "esri-icon-non-visible")
+                $item.attr("aria-checked", "fasle");
+            } else {
+                $eye.attr("class", "esri-icon-visible");
+                $item.attr("aria-checked", "true");
+            }
+
+            const id = $item.attr("label");
+            const layer = map.layers.find(function(layer) {
+                return layer.id === id;
+            });
+            layer.visible = !layer.visible;
+
+        })
+
+
+        $(".iconfont").click(function () {
+            let $item = $(this);
+            const id = $item.attr("label");
+            let layer = map.layers.find(function(layer) {
+                return layer.id === id;
+            });
+            map.remove(layer);
+            $item.parents(".esri-layer-list__item").remove();
+        })
+
+
+        function addLayer(layer) {
+            const title = layer.title, id = layer.id;
+            let element = `<li class="esri-layer-list__item" id="${id}">
+                        <div class="img-container">
+                            <img crossorigin="anonymous" alt="">
+                        </div>
+                        <div class="esri-layer-list__item-container">
+                            <div class="esri-layer-list__item-label" tabindex="0" aria-checked="true" label="${id}">
+                                <span class="esri-layer-list__item-toggle">
+                                    <span class="esri-icon-visible" aria-hidden="true"></span>
+                                </span>
+                                <span title=${title} aria-label=${title} class="esri-layer-list__item-title">${title}</span>
+                            </div>
+                            <span class="icon iconfont" label="${id}">&#xe621;</span>
+                        </div>
+                    </li>`
+
+            $(".esri-layer-list__list .none-layer").remove();
+            $(".esri-layer-list__list").append(element);
+        }
+
+
+        var $body = $("body");
+        var $viewDiv = $("#viewDiv");
+        var $swipe = $(".esri-swipe__container")
+        $swipe.on("mousedown", function () {
+            console.log("mouseenter");
+            $body.on("mousemove", function (event) {
+                var left = event.pageX - $viewDiv.offset().left;
+                var l = left / $viewDiv.width() * 100 ;
+
+                var w = $swipe.offset().left + $swipe.width() + 2;
+                var h = $viewDiv.height();
+                var clip = `rect(0px,${w}px,${h}px,0px)`;
+                $swipe.css("left", `${l}%`);
+                $viewDiv.css("clip", clip);
+
+            });
+
+            $body.on("mouseup", function () {
+                $(this).off("mouseup");
+                $(this).off("mousemove");
+
+            });
+
+        });
+
+
+    });
+
+
+
+
+</script>
+</body>
+</html>
